@@ -7,18 +7,18 @@
 import SwiftUI
 
 struct VehicleOverviewView: View {
-    @State private var vehicle: Vehicle = Vehicle(name: "Lexus", mileage: 20000, isLocked: true)
+    @StateObject private var viewModel: VehicleOverviewViewModel = .init()
     
     var body: some View {
         VStack(spacing: 16) {
-            Text("Vehicle: \(vehicle.name)")
+            Text("Vehicle: \(viewModel.vehicle.name)")
                 .font(.headline)
-            Text("Mileage: \(vehicle.mileage) miles")
+            Text("Mileage: \(viewModel.vehicle.mileage) miles")
                             .font(.subheadline)
-            Button(action: {
-                vehicle.isLocked.toggle()
-            }) {
-                Text(vehicle.isLocked ? "Unlock" : "Lock")
+            Button{
+                viewModel.toggleLock()
+            } label: {
+                Text(viewModel.vehicle.isLocked ? "Unlock" : "Lock")
             }
         }
         .padding()

@@ -15,3 +15,21 @@ struct DriverCompanionTests {
     }
 
 }
+
+import XCTest
+
+final class VehicleOverviewViewModelTests: XCTestCase {
+    @MainActor
+    func testToggleLock() {
+        let viewModel = VehicleOverviewViewModel()
+        let curr = viewModel.vehicle.isLocked
+        
+        // Toggle once
+        viewModel.toggleLock()
+        XCTAssertFalse(curr == viewModel.vehicle.isLocked)
+        
+        // Toggle again
+        viewModel.toggleLock()
+        XCTAssertTrue(curr == viewModel.vehicle.isLocked)
+    }
+}
