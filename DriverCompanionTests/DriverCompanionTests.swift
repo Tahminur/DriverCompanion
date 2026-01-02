@@ -20,16 +20,17 @@ import XCTest
 
 final class VehicleOverviewViewModelTests: XCTestCase {
     @MainActor
-    func testToggleLock() {
+    func testToggleLock() async {
         let viewModel = VehicleOverviewViewModel()
-        let curr = viewModel.vehicle.isLocked
+        await viewModel.loadVehicle()
+        let curr = viewModel.vehicle!.isLocked
         
         // Toggle once
         viewModel.toggleLock()
-        XCTAssertFalse(curr == viewModel.vehicle.isLocked)
+        XCTAssertFalse(curr == viewModel.vehicle!.isLocked)
         
         // Toggle again
         viewModel.toggleLock()
-        XCTAssertTrue(curr == viewModel.vehicle.isLocked)
+        XCTAssertTrue(curr == viewModel.vehicle!.isLocked)
     }
 }

@@ -8,13 +8,30 @@ import SwiftUI
 
 @MainActor
 final class VehicleOverviewViewModel: ObservableObject {
-    @Published var vehicle: Vehicle
+    @Published var vehicle: Vehicle?
+    @Published var isLoading: Bool = false
+    @Published var error: String?
     
-    init() {
-        self.vehicle = Vehicle(name: "Lexus", mileage: 2_000, isLocked: true)
+    private let service: VehicleService
+    
+    init(service: VehicleService = MockVehicleService()) {
+        self.service = service
+    }
+    
+    func loadVehicle() async {
+        isLoading = true
+        error = nil
+        
+        do {
+            let fetchedVehicle = try await service.fetchVehicle()
+            vehicle = fetchedVehicle
+        } catch {
+            self.error = error.localizedDescription
+        }
+        isLoading = false
     }
     
     func toggleLock() {
-        vehicle.isLocked.toggle()
+        vehicle?.isLocked.toggle()
     }
 }
