@@ -7,21 +7,24 @@
 import SwiftUI
 
 @MainActor
-final class VehicleOverviewViewModel: ObservableObject {
-    @Published var vehicle: Vehicle?
+final class VehicleDetailViewModel: ObservableObject {
+    @Published var vehicle: Vehicle
     @Published var isLoading: Bool = false
     @Published var error: String?
     
     private let service: VehicleService
     
-    init(service: VehicleService = MockVehicleService()) {
+    init(
+        vehicle: Vehicle,
+         service: VehicleService = MockVehicleService()
+    ) {
         self.service = service
+        self.vehicle = vehicle
     }
-    
+    //below not needed anymore since vehicle is loaded by listview already
     func loadVehicle() async {
         isLoading = true
         error = nil
-        
         do {
             let fetchedVehicle = try await service.fetchVehicle()
             vehicle = fetchedVehicle
@@ -31,7 +34,8 @@ final class VehicleOverviewViewModel: ObservableObject {
         isLoading = false
     }
     
-    func toggleLock() {
-        vehicle?.isLocked.toggle()
+    func toggleLock() async {
+        vehicle.isLocked.toggle()
+        try? await service.updateVehicle(vehicle: vehicle)
     }
 }
