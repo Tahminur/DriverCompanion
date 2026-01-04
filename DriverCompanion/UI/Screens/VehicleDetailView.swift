@@ -7,28 +7,22 @@
 import SwiftUI
 
 struct VehicleDetailView: View {
-    @StateObject var viewModel: VehicleDetailViewModel
-    
+    @ObservedObject var store: VehicleStore
+    let vehicleID: Vehicle.ID
+    var vehicle: Vehicle? {
+        store.vehicle(vehicleID)
+    }
     var body: some View {
         VStack(spacing: 16) {
-            if viewModel.isLoading {
-                ProgressView()
-            } else if let error = viewModel.error{
-                Text("Error: \(error)")
-                    .foregroundColor(.red)
-            } else {
-                Text("Vehicle: \(viewModel.vehicle.name)")
-                    .font(.headline)
-                Text("Mileage: \(viewModel.vehicle.mileage) miles")
-                    .font(.subheadline)
-                Button(viewModel.vehicle.isLocked ? "Unlock" : "Lock") {
-                    Task {
-                        await viewModel.toggleLock()
-                    }
+            Text("Vehicle: \(vehicle?.name ?? "Unknown")")
+            Text("Mileage: \(vehicle?.mileage ?? 0) miles")
+
+            Button((vehicle?.isLocked ?? false) ? "Unlock" : "Lock") {
+                Task {
+                    await store.toggleLockStatus(vehicleID)
                 }
             }
         }
-        .padding()
-        
     }
 }
+

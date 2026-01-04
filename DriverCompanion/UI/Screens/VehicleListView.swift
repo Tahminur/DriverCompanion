@@ -7,31 +7,27 @@
 import SwiftUI
 
 struct VehicleListView: View {
-    @StateObject private var viewModel = VehicleListViewModel()
+    @StateObject private var vehicleStore = VehicleStore()
     var body: some View {
         
         NavigationStack{
-            if viewModel.isLoading {
+            if vehicleStore.isLoading {
                 ProgressView()
-            } else if let error = viewModel.error {
+            } else if let error = vehicleStore.error {
                 Text("Error: \(error)")
                     .foregroundColor(.red)
             }
-            List(viewModel.vehicles) { vehicle in
-                NavigationLink(value: vehicle) {
-                    VehicleRowView(vehicle: vehicle)
+            List(vehicleStore.vehicles) { vehicle in
+                NavigationLink(value: vehicle.id) {
+                    VehicleRowView(name:vehicle.name, isLocked: vehicle.isLocked)
                 }
             }
             .navigationTitle("My Vehicles")
-            .navigationDestination(for: Vehicle.self) { vehicle in
-                VehicleDetailView(viewModel: VehicleDetailViewModel(vehicle: vehicle))
+            .navigationDestination(for: Vehicle.ID.self) { id in
+                VehicleDetailView(store: vehicleStore, vehicleID: id)
             }
             .task {
-                await viewModel.loadVehicles()
-            }
-            .onAppear {
-                //how it would be in production but currently since this is a mock service the onappear update wouldn't really do anything currently
-                Task { await viewModel.loadVehicles() }
+                await vehicleStore.loadVehicles()
             }
         }
     }

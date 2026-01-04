@@ -9,7 +9,7 @@ import Foundation
 
 protocol VehicleService {
     func fetchVehicle() async throws -> Vehicle
-    func updateVehicle(vehicle: Vehicle) async throws
+    func updateVehicle(_ vehicle: Vehicle) async throws
     func fetchVehicles() async throws -> [Vehicle]
 }
 
@@ -20,7 +20,7 @@ struct MockVehicleService: VehicleService {
         return Vehicle(id: UUID(),name: "Lexus", mileage: 20_000, isLocked: true)
     }
     
-    func updateVehicle(vehicle: Vehicle) async throws {
+    func updateVehicle(_ vehicle: Vehicle) async throws {
         //simulate network delay for uploading vehicle change to backend
         try await Task.sleep(nanoseconds: 500_000_000)
     }

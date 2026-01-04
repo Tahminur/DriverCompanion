@@ -8,34 +8,30 @@ import SwiftUI
 
 @MainActor
 final class VehicleDetailViewModel: ObservableObject {
-    @Published var vehicle: Vehicle
-    @Published var isLoading: Bool = false
-    @Published var error: String?
+    @ObservedObject private var vehicleStore: VehicleStore
+    let vehicleID: Vehicle.ID
     
-    private let service: VehicleService
-    
-    init(
-        vehicle: Vehicle,
-         service: VehicleService = MockVehicleService()
-    ) {
-        self.service = service
-        self.vehicle = vehicle
+    init(_ vehicleStore: VehicleStore, _ vehicleID: Vehicle.ID) {
+        self.vehicleID = vehicleID
+        self.vehicleStore = vehicleStore
     }
-    //below not needed anymore since vehicle is loaded by listview already
-    func loadVehicle() async {
-        isLoading = true
-        error = nil
-        do {
-            let fetchedVehicle = try await service.fetchVehicle()
-            vehicle = fetchedVehicle
-        } catch {
-            self.error = error.localizedDescription
-        }
-        isLoading = false
+    var vehicle: Vehicle? {
+        vehicleStore.vehicle(vehicleID)
     }
-    
+
+    var nameText: String {
+        vehicle?.name ?? "Unknown"
+    }
+
+    var mileageText: String {
+        vehicle.map { "\($0.mileage)" } ?? "--"
+    }
+
+    var isLocked: Bool {
+        vehicle?.isLocked ?? false
+    }
+
     func toggleLock() async {
-        vehicle.isLocked.toggle()
-        try? await service.updateVehicle(vehicle: vehicle)
+        await vehicleStore.toggleLockStatus(vehicleID)
     }
 }

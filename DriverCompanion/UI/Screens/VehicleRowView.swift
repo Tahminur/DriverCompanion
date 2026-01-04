@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct VehicleRowView: View {
-    let vehicle: Vehicle
+    let name: String
+    let isLocked: Bool
     
     var body: some View {
-        
         HStack {
             VStack(alignment: .leading) {
-                Text("Vehicle: \(vehicle.name)")
+                Text("Vehicle: \(name)")
                     .font(.headline)
-                Text(vehicle.isLocked ? "Unlock" : "Lock")
+                Text(isLocked ? "Unlock" : "Lock")
                     .font(.caption)
-                    .foregroundColor(vehicle.isLocked ? .red : .green)
+                    .foregroundColor(isLocked ? .red : .green)
             }
             Spacer()
             
-            Image(systemName: vehicle.isLocked ? "lock.fill" : "lock.open")
+            Image(systemName: isLocked ? "lock.fill" : "lock.open")
         }
     }
 }
